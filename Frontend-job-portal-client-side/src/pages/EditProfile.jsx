@@ -28,7 +28,6 @@ const EditProfile = () => {
   return (
     <div className="edit-page">
 
-      {/* NAVBAR */}
       <nav className="dash-nav">
         <button className="menu-btn" onClick={() => navigate('/dashboard')}>☰</button>
         <img src="/logo.png" alt="Job Portal" className="dash-nav-logo" />
@@ -43,7 +42,7 @@ const EditProfile = () => {
 
       <div className="dash-body">
 
-        {/* SIDEBAR */}
+        
         <aside className="sidebar">
           <div className="sidebar-user">
             <img src="/logo4.png" alt="avatar"
@@ -61,7 +60,6 @@ const EditProfile = () => {
           </div>
         </aside>
 
-        {/* MAIN */}
         <main className="dash-main" style={{ alignItems: 'flex-start' }}>
           <div className="edit-card">
 

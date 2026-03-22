@@ -83,7 +83,7 @@ const AdminLogin = () => {
             style={{ color: '#2563eb', cursor: 'pointer', fontWeight: 600 }}
             onClick={() => navigate('/login')}
           >
-            ← Back to User Login
+          Back to User Login
           </span>
         </p>
       </div>

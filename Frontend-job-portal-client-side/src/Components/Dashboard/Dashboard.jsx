@@ -4,9 +4,9 @@ import './Dashboard.css'
 
 const Dashboard = () => {
   const navigate = useNavigate()
-  const [activeTab, setActiveTab]     = useState('profile')
+  const [activeTab, setActiveTab] = useState('profile')
   const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [user, setUser]               = useState({})
+  const [user, setUser] = useState({})
 
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('user') || '{}')
@@ -22,16 +22,13 @@ const Dashboard = () => {
   return (
     <div className="dash-wrapper">
 
-      {/* NAVBAR */}
       <nav className="dash-nav">
-        <button className="menu-btn" onClick={() => setSidebarOpen(!sidebarOpen)}>☰</button>
         <img src="/logo.png" alt="Job Portal" className="dash-nav-logo" />
         <button className="logout-btn" onClick={handleLogout}>⇒ LOGOUT</button>
       </nav>
 
       <div className="dash-body">
 
-        {/* SIDEBAR */}
         {sidebarOpen && (
           <aside className="sidebar">
             <div className="sidebar-user">
@@ -57,10 +54,8 @@ const Dashboard = () => {
           </aside>
         )}
 
-        {/* MAIN */}
         <main className="dash-main">
 
-          {/* PROFILE TAB */}
           {activeTab === 'profile' && (
             <div className="profile-card">
               <h2 className="profile-title">Informations</h2>
@@ -72,7 +67,7 @@ const Dashboard = () => {
                       style={{ width: '120px', height: '120px', borderRadius: '8px' }} />
                   </div>
                   <button className="edit-btn" onClick={() => navigate('/edit-profile')}>
-                    ✎ Edit
+                     Edit
                   </button>
                 </div>
 
@@ -111,7 +106,6 @@ const Dashboard = () => {
             </div>
           )}
 
-          {/* APPLICATIONS TAB */}
           {activeTab === 'applications' && (
             <div className="profile-card">
               <h2 className="profile-title">My Applications</h2>

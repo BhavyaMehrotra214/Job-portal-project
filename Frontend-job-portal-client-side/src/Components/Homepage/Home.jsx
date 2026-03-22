@@ -8,11 +8,10 @@ const Home = () => {
   return (
     <div className="home">
 
-      {/* NAVBAR */}
       <nav className="home-nav">
         <img src="/logo.png" alt="Job Portal" className="nav-logo" />
         <div className="nav-links">
-          <a href="#">Jobs</a>
+          <span className="nav-jobs-link" onClick={()=> navigate('/jobs')}>Jobs</span>
           <span className="nav-dashboard-link" onClick={() => navigate('/dashboard')}>
             Dashboard
           </span>
@@ -22,7 +21,6 @@ const Home = () => {
         </div>
       </nav>
 
-      {/* HERO */}
       <section className="hero">
         <div className="hero-left">
           <h1 className="hero-title">
