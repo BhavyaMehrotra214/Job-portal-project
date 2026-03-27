@@ -29,20 +29,18 @@ const EditProfile = () => {
     <div className="edit-page">
 
       <nav className="dash-nav">
-        <button className="menu-btn" onClick={() => navigate('/dashboard')}>☰</button>
-        <img src="/logo.png" alt="Job Portal" className="dash-nav-logo" />
+        <button className="menu-btn" onClick={() => navigate('/dashboard')}>➡️</button>
+        <img src="/logo.png" alt="Job Portal" className="dash-nav-logo"/>
         <button className="logout-btn" onClick={() => {
           localStorage.removeItem('user')
           localStorage.removeItem('token')
           navigate('/login')
         }}>
-          ⇒ LOGOUT
+           LOGOUT
         </button>
       </nav>
 
       <div className="dash-body">
-
-        
         <aside className="sidebar">
           <div className="sidebar-user">
             <img src="/logo4.png" alt="avatar"
@@ -62,9 +60,8 @@ const EditProfile = () => {
 
         <main className="dash-main" style={{ alignItems: 'flex-start' }}>
           <div className="edit-card">
-
             <h2 className="edit-title">
-              Update Profile <span className="edit-plus">⊕</span>
+              Update Profile 
             </h2>
             <div className="edit-underline"></div>
 

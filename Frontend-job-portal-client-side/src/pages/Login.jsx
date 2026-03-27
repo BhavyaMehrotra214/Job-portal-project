@@ -41,8 +41,8 @@ const Login = () => {
         <h2 className="auth-title">Login</h2>
 
         <form className="auth-form" onSubmit={handleSubmit} noValidate>
-          {error   && <div className="alert alert-error">{error}</div>}
-          {success && <div className="alert alert-success">{success}</div>}
+          {error   && <div className="alert-error">{error}</div>}
+          {success && <div className="alert-success">{success}</div>}
 
           <div className="form-field">
             <label>Email</label>

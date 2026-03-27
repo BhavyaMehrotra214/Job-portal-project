@@ -17,17 +17,6 @@ const AdminLogin = () => {
     }
     setLoading(true)
     try {
-      // Real API:
-      // const res = await fetch('/api/auth/admin-login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email, password }),
-      // })
-      // const data = await res.json()
-      // if (!res.ok) throw new Error(data.message)
-      // localStorage.setItem('admin', JSON.stringify(data.admin))
-
-      // Demo:
       if (email === 'admin@gmail.com' && password === 'admin123') {
         localStorage.setItem('admin', JSON.stringify({ email, role: 'admin' }))
         navigate('/admin/dashboard')
@@ -47,10 +36,9 @@ const AdminLogin = () => {
         <img src="/logo.png" alt="Job Portal" className="auth-logo" />
         <h2 className="auth-title" style={{ color: '#dc2626' }}>Admin Login</h2>
         <p style={{ fontSize: 12, color: '#6b7280', marginBottom: 20, textAlign: 'center' }}>
-          Demo: admin@gmail.com / admin123
         </p>
         <form className="auth-form" onSubmit={handleSubmit} noValidate>
-          {error && <div className="alert alert-error">{error}</div>}
+          {error && <div className="alert-error">{error}</div>}
           <div className="form-field">
             <label>Email</label>
             <input

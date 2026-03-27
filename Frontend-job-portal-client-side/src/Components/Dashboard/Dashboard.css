@@ -1,9 +1,3 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
 body {
   font-family: sans-serif;
   background: #f9fafb;
@@ -28,33 +22,18 @@ body {
   z-index: 100;
 }
 
-.menu-btn {
-  background: none;
-  border: 1.5px solid #d1d5db;
-  border-radius: 6px;
-  padding: 6px 10px;
-  font-size: 18px;
-  cursor: pointer;
-  color: #374151;
-  transition: background 0.2s;
-}
-
-.menu-btn:hover { background: #f3f4f6; }
-
 .dash-nav-logo { height: 34px; }
 
 .logout-btn {
-  background: none;
-  border: none;
-  color: #ef4444;
+  background: rgb(222, 45, 45) ;
+  border:#111111;
+  color: white;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   letter-spacing: 0.5px;
   transition: color 0.2s;
 }
-
-.logout-btn:hover { color: #dc2626; }
 
 .dash-body {
   display: flex;
@@ -63,7 +42,7 @@ body {
 
 .sidebar {
   width: 220px;
-  background: #ffffff;
+  background: rgb(250, 246, 246);
   border-right: 1px solid #e5e7eb;
   min-height: calc(100vh - 59px);
   padding: 24px 0;
@@ -88,7 +67,7 @@ body {
 
 .sidebar-role {
   font-size: 13px;
-  color: #6b7280;
+  color: black;
 }
 
 .sidebar-menu { padding: 0 12px; }
@@ -108,7 +87,7 @@ body {
 }
 
 .sidebar-item:hover {
-  background: #f3f4f6;
+  background: rgb(245, 243, 243);
   color: #2563eb;
 }
 
@@ -129,7 +108,7 @@ body {
 }
 
 .profile-card {
-  background: #ffffff;
+  background: rgb(237, 237, 244);
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 36px 40px;
@@ -140,7 +119,7 @@ body {
 .profile-title {
   font-size: 26px;
   font-weight: 700;
-  color: #374151;
+  color: black;
   margin-bottom: 32px;
 }
 
@@ -169,19 +148,15 @@ body {
 }
 
 .edit-btn {
-  background: none;
-  border: none;
-  color: #374151;
+  background: rgb(36, 223, 36) !important;
+  color:black;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: color 0.2s;
 }
-
-.edit-btn:hover { color: #2563eb; }
 
 .profile-info {
   flex: 1;
@@ -198,7 +173,7 @@ body {
 
 .info-label {
   font-size: 15px;
-  color: #6b7280;
+  color: black;
   min-width: 100px;
 }
 
@@ -213,7 +188,7 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 60px 0;
-  color: #9ca3af;
+  color:black;
   gap: 12px;
 }
 

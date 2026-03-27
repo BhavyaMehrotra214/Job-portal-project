@@ -24,7 +24,7 @@ const Dashboard = () => {
 
       <nav className="dash-nav">
         <img src="/logo.png" alt="Job Portal" className="dash-nav-logo" />
-        <button className="logout-btn" onClick={handleLogout}>⇒ LOGOUT</button>
+        <button className="logout-btn" onClick={handleLogout}> LOGOUT</button>
       </nav>
 
       <div className="dash-body">
@@ -87,7 +87,7 @@ const Dashboard = () => {
                   <div className="info-row">
                     <span className="info-label">Join :</span>
                     <span className="info-value">
-                      {new Date().toLocaleDateString('en-US', {
+                      {new Date().toLocaleDateString('en-IN', {
                         month: 'short', day: 'numeric', year: 'numeric'
                       })}
                     </span>
@@ -105,7 +105,6 @@ const Dashboard = () => {
               </div>
             </div>
           )}
-
           {activeTab === 'applications' && (
             <div className="profile-card">
               <h2 className="profile-title">My Applications</h2>
@@ -121,5 +120,4 @@ const Dashboard = () => {
     </div>
   )
 }
-
 export default Dashboard
