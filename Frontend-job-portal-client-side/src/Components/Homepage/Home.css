@@ -42,19 +42,18 @@ body {
 
 .nav-dashboard-link:hover { color: #2563eb; }
 
-.nav-login-btn {
-  background: #2563eb;
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  padding: 10px 30px;
+.nav-login-sign-btn {
+  display: flex;
+  gap: 20px;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
+  color: #111111;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: color 0.2s;
 }
 
-.nav-login-btn:hover { background: #1d4ed8; }
+.nav-login-sign-btn:hover { color: #1d4ed8; }
+
 
 .hero {
   display: flex;

@@ -42,7 +42,7 @@ const Dashboard = () => {
                 className={`sidebar-item ${activeTab === 'profile' ? 'active' : ''}`}
                 onClick={() => setActiveTab('profile')}
               >
-                <span className="sidebar-icon">👤</span> Profile
+               - <span className="sidebar-icon">👤</span> Profile
               </div>
               <div
                 className={`sidebar-item ${activeTab === 'applications' ? 'active' : ''}`}
