@@ -136,10 +136,6 @@ const Login = () => {
         <p className="auth-footer">
           Don't have an account? <Link to="/register">Create Account</Link>
         </p>
-
-        <p style={{ textAlign: "center", marginTop: "10px", fontSize: "14px" }}>
-          Developed by Aryan Singh
-        </p>
       </div>
     </div>
   )
