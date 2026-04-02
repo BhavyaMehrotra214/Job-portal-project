@@ -8,6 +8,7 @@ const Login = () => {
   const [password, setPass]   = useState('')
   const [error, setError]     = useState('')
   const [success, setSuccess] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -18,20 +19,32 @@ const Login = () => {
       setError('Please fill in all fields.')
       return
     }
+
     if (!/\S+@\S+\.\S+/.test(email)) {
       setError('Please enter a valid email address.')
       return
     }
 
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters.')
+      return
+    }
+
+    setLoading(true)
+
     const savedUser = JSON.parse(localStorage.getItem('user') || '{}')
 
     localStorage.setItem('user', JSON.stringify({
       username: savedUser.username,
-      email:email
+      email: email
     }))
 
-    setSuccess('Login successful! Redirecting...')
-    setTimeout(() => navigate('/'), 1200)
+    setSuccess(`Welcome back, ${savedUser.username || 'User'}!`)
+
+    setTimeout(() => {
+      setLoading(false)
+      navigate('/')
+    }, 1200)
   }
 
   return (
@@ -50,6 +63,7 @@ const Login = () => {
               type="email"
               placeholder="Email@example.com"
               value={email}
+              required
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
@@ -60,17 +74,23 @@ const Login = () => {
               type="password"
               placeholder="Type Here"
               value={password}
+              required
               onChange={(e) => setPass(e.target.value)}
             />
           </div>
 
-          <button type="submit" className="auth-btn">
-            Login
+          <button type="submit" className="auth-btn" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
         <p className="auth-footer">
-          Don't have an account. <Link to="/register">Create Account</Link>
+          Don't have an account? <Link to="/register">Create Account</Link>
+        </p>
+
+        {/* Your contribution */}
+        <p style={{ textAlign: "center", marginTop: "10px", fontSize: "14px" }}>
+          Developed by Aryan
         </p>
       </div>
     </div>
