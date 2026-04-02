@@ -10,7 +10,7 @@ const Login = () => {
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const [rememberMe, setRememberMe] = useState(false) // ✅ NEW
+  const [rememberMe, setRememberMe] = useState(false) 
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -34,7 +34,7 @@ const Login = () => {
 
     const savedUser = JSON.parse(localStorage.getItem('user') || '{}')
 
-    // ✅ NEW: Proper validation
+    
     if (!savedUser.email) {
       setError("User not found. Please register first.")
       return
@@ -52,7 +52,7 @@ const Login = () => {
       email: email
     }
 
-    // ✅ NEW: Remember me logic
+   
     if (rememberMe) {
       localStorage.setItem('user', JSON.stringify(userData))
     } else {
@@ -71,7 +71,7 @@ const Login = () => {
     <div className="auth-page">
       <div className="auth-card">
         <img src="/logo.png" alt="Job Portal" className="auth-logo" />
-        <h2 className="auth-title">Welcome Back 👋</h2>
+        <h2 className="auth-title">Welcome Back </h2>
 
         <form className="auth-form" onSubmit={handleSubmit} noValidate>
           {error   && <div className="alert-error">{error}</div>}
@@ -109,7 +109,7 @@ const Login = () => {
             </div>
           </div>
 
-          {/* ✅ NEW: Remember Me */}
+          {}
           <div style={{ margin: "10px 0" }}>
             <label>
               <input
