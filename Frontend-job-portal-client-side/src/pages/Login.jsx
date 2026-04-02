@@ -9,6 +9,7 @@ const Login = () => {
   const [error, setError]     = useState('')
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -51,7 +52,7 @@ const Login = () => {
     <div className="auth-page">
       <div className="auth-card">
         <img src="/logo.png" alt="Job Portal" className="auth-logo" />
-        <h2 className="auth-title">Login</h2>
+        <h2 className="auth-title">Welcome Back 👋</h2>
 
         <form className="auth-form" onSubmit={handleSubmit} noValidate>
           {error   && <div className="alert-error">{error}</div>}
@@ -69,19 +70,36 @@ const Login = () => {
           </div>
 
           <div className="form-field">
-            <label>Password</label>
-            <input
-              type="password"
-              placeholder="Type Here"
-              value={password}
-              required
-              onChange={(e) => setPass(e.target.value)}
-            />
-          </div>
+  <label>Password</label>
+  <div style={{ display: "flex", alignItems: "center" }}>
+    <input
+      type={showPassword ? "text" : "password"}
+      placeholder="Type Here"
+      value={password}
+      required
+      onChange={(e) => setPass(e.target.value)}
+      style={{ flex: 1 }}
+    />
+    <button
+      type="button"
+      onClick={() => setShowPassword(!showPassword)}
+      style={{ marginLeft: "5px" }}
+    >
+      {showPassword ? "Hide" : "Show"}
+    </button>
+  </div>
+</div>
 
-          <button type="submit" className="auth-btn" disabled={loading}>
+          <button
+  type="submit"
+  className="auth-btn"
+  disabled={loading || !email || !password}
+>
             {loading ? "Logging in..." : "Login"}
           </button>
+          <p style={{ textAlign: "right", marginTop: "5px" }}>
+  <Link to="#">Forgot Password?</Link>
+</p>
         </form>
 
         <p className="auth-footer">
