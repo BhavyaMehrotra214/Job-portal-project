@@ -10,6 +10,7 @@ const Login = () => {
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false) // ✅ NEW
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -31,14 +32,32 @@ const Login = () => {
       return
     }
 
-    setLoading(true)
-
     const savedUser = JSON.parse(localStorage.getItem('user') || '{}')
 
-    localStorage.setItem('user', JSON.stringify({
+    // ✅ NEW: Proper validation
+    if (!savedUser.email) {
+      setError("User not found. Please register first.")
+      return
+    }
+
+    if (savedUser.email !== email) {
+      setError("Invalid email")
+      return
+    }
+
+    setLoading(true)
+
+    const userData = {
       username: savedUser.username,
       email: email
-    }))
+    }
+
+    // ✅ NEW: Remember me logic
+    if (rememberMe) {
+      localStorage.setItem('user', JSON.stringify(userData))
+    } else {
+      sessionStorage.setItem('user', JSON.stringify(userData))
+    }
 
     setSuccess(`Welcome back, ${savedUser.username || 'User'}!`)
 
@@ -70,45 +89,56 @@ const Login = () => {
           </div>
 
           <div className="form-field">
-  <label>Password</label>
-  <div style={{ display: "flex", alignItems: "center" }}>
-    <input
-      type={showPassword ? "text" : "password"}
-      placeholder="Type Here"
-      value={password}
-      required
-      onChange={(e) => setPass(e.target.value)}
-      style={{ flex: 1 }}
-    />
-    <button
-      type="button"
-      onClick={() => setShowPassword(!showPassword)}
-      style={{ marginLeft: "5px" }}
-    >
-      {showPassword ? "Hide" : "Show"}
-    </button>
-  </div>
-</div>
+            <label>Password</label>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Type Here"
+                value={password}
+                required
+                onChange={(e) => setPass(e.target.value)}
+                style={{ flex: 1 }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{ marginLeft: "5px" }}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+          </div>
+
+          {/* ✅ NEW: Remember Me */}
+          <div style={{ margin: "10px 0" }}>
+            <label>
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={() => setRememberMe(!rememberMe)}
+              /> Remember Me
+            </label>
+          </div>
 
           <button
-  type="submit"
-  className="auth-btn"
-  disabled={loading || !email || !password}
->
+            type="submit"
+            className="auth-btn"
+            disabled={loading || !email || !password}
+          >
             {loading ? "Logging in..." : "Login"}
           </button>
+
           <p style={{ textAlign: "right", marginTop: "5px" }}>
-  <Link to="#">Forgot Password?</Link>
-</p>
+            <Link to="#">Forgot Password?</Link>
+          </p>
         </form>
 
         <p className="auth-footer">
           Don't have an account? <Link to="/register">Create Account</Link>
         </p>
 
-        {/* Your contribution */}
         <p style={{ textAlign: "center", marginTop: "10px", fontSize: "14px" }}>
-          Developed by Aryan
+          Developed by Aryan Singh
         </p>
       </div>
     </div>
