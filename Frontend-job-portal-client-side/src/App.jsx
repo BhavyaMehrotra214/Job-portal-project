@@ -9,7 +9,7 @@ import Register from './pages/Register'
 import EditProfile from './pages/EditProfile'
 import AdminLogin from './pages/AdminLogin'
 import Jobs from './pages/Jobs'
-
+import JobDetails from './pages/jobDetail'
 import './App.css'
 
 function App() {
@@ -23,6 +23,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/jobs" element={<Jobs />} />
+        <Route path="/job/:id" element={<JobDetails/>} />
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
