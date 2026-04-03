@@ -29,7 +29,14 @@ const Jobs = () => {
     (typeFilter   === 'Default' || j.type   === typeFilter) &&
     (statusFilter === 'Default' || j.status === statusFilter)
   )
-
+   .sort((a, b) => {
+    if (sortBy === 'A-Z') {
+      return a.title.localeCompare(b.title)
+    } else if (sortBy === 'Z-A') {
+      return b.title.localeCompare(a.title)
+    }
+    return 0
+  })
   return (
     <div className="jobs-page">
 
@@ -110,7 +117,7 @@ const Jobs = () => {
               </div>
 
               <div className="card-btns">
-                <button className="btn-details">Details</button>
+                <button className="btn-details" onClick={() => navigate(`/job/${job.id}`)}>Details</button>
                 <button className="btn-apply">Apply</button>
               </div>
 
