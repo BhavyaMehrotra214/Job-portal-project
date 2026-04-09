@@ -5,6 +5,10 @@
   background: #f9fafb;
 }
 
+.dash-nav-logo{
+  height: 60px;
+}
+
 .edit-card {
   background: #ffffff;
   border: 1px solid #e5e7eb;
@@ -89,8 +93,8 @@
 .menu-btn {
   background: white !important;
   border: 1px solid #d1d5db;
-  border-radius: 6px;
-  padding: 6px 10px;
+  border-radius: 6px 10PX;
+  padding: 8px 10px;
 }
 
 .menu-btn:hover {

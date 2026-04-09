@@ -1,28 +1,14 @@
 import React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import './Home.css'
+import AppNavbar from '../../Components/AppNavbar'
 
 const Home = () => {
   const navigate = useNavigate()
 
   return (
     <div className="home">
-
-      <nav className="home-nav">
-        <img src="/logo.png" alt="Job Portal" className="nav-logo" />
-
-        <div className="nav-links">
-          {/* <span className="nav-jobs-link" onClick={()=> navigate('/jobs')}>Jobs</span> */}
-          <Link to="/jobs">Jobs</Link>
-          {/* <span className="nav-dashboard-link" onClick={() => navigate('/dashboard')}> */} 
-           {/* </span> */}
-          <Link to="/dashboard">Dashboard</Link>
-          <div className="nav-login-sign-btn">
-            <Link to="/login">Login</Link>
-            <Link to="/register">Signup</Link>
-          </div>
-        </div>
-      </nav>
+      <AppNavbar />
 
       {/* Hero Section */}
       <section className="hero">
@@ -36,9 +22,10 @@ const Home = () => {
             Whether you are a fresher or an experienced professional, you can discover
             thousands of job opportunities tailored to your skills and interests.
 
-            Recruiters can easily post jobs, manage applications, and find the right
-            candidates, while job seekers can apply, track applications, and update their
-            profiles effortlessly.
+            Recruiters can register, create a company profile, post jobs, review applicants,
+            and accept or reject candidates directly from their dashboard. Candidates can
+            apply, track applications, and update their profiles effortlessly, while admins
+            keep platform control available as an optional higher-privilege role.
           </p>
 
           <button
@@ -53,7 +40,6 @@ const Home = () => {
           <img src="/logo2.png" alt="hero" className="hero-img" />
         </div>
       </section>
-
     </div>
   )
 }

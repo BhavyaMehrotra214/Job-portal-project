@@ -1,5 +1,8 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
+import { authApi } from '../utils/api'
+import { setAuthData } from '../utils/auth'
 
 const Login = () => {
   const navigate = useNavigate()
@@ -9,69 +12,63 @@ const Login = () => {
   const [error, setError]     = useState('')
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const [rememberMe, setRememberMe] = useState(false) 
 
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async(e) => {
     e.preventDefault()
     setError('')
     setSuccess('')
 
     if (!email.trim() || !password.trim()) {
-      setError('Please fill in all fields.')
+      const message = 'Please fill in all fields'
+      setError(message)
+      toast.error(message)
       return
     }
 
     if (!/\S+@\S+\.\S+/.test(email)) {
-      setError('Please enter a valid email address.')
+       const message = 'Please fill in all fields'
+      setError(message)
+      toast.error(message)
       return
     }
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.')
-      return
-    }
+    try {
+      setLoading(true)
 
-    const savedUser = JSON.parse(localStorage.getItem('user') || '{}')
+      const data = await authApi.login({ email, password })
 
-    
-    if (!savedUser.email) {
-      setError("User not found. Please register first.")
-      return
-    }
+      setAuthData({
+        token: data.token,
+        user: {
+          _id: data._id,
+          username: data.username || data.name,
+          name: data.name,
+          email: data.email,
+          role: data.role,
+          location: data.location,
+          resumeLink: data.resumeLink,
+          gender: data.gender,
+          createdAt: data.createdAt
+        }
+      })
 
-    if (savedUser.email !== email) {
-      setError("Invalid email")
-      return
-    }
-
-    setLoading(true)
-
-    const userData = {
-      username: savedUser.username,
-      email: email
-    }
-
-   
-    if (rememberMe) {
-      localStorage.setItem('user', JSON.stringify(userData))
-    } else {
-      sessionStorage.setItem('user', JSON.stringify(userData))
-    }
-
-    setSuccess(`Welcome back, ${savedUser.username || 'User'}!`)
-
-    setTimeout(() => {
+      setSuccess('Login successful! Redirecting...')
+      toast.success('Login successful!')
+      setTimeout(() => navigate('/Jobs'), 1200)
+    } catch (err) {
+      setError(err.message)
+      toast.error(err.message || 'Login failed.')
+    } finally {
       setLoading(false)
-      navigate('/')
-    }, 1200)
+    }
   }
 
   return (
     <div className="auth-page">
       <div className="auth-card">
         <img src="/logo.png" alt="Job Portal" className="auth-logo" />
-        <h2 className="auth-title">Welcome Back </h2>
+        <h2 className="auth-title">Login</h2>
 
         <form className="auth-form" onSubmit={handleSubmit} noValidate>
           {error   && <div className="alert-error">{error}</div>}
@@ -83,58 +80,27 @@ const Login = () => {
               type="email"
               placeholder="Email@example.com"
               value={email}
-              required
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
           <div className="form-field">
             <label>Password</label>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Type Here"
-                value={password}
-                required
-                onChange={(e) => setPass(e.target.value)}
-                style={{ flex: 1 }}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                style={{ marginLeft: "5px" }}
-              >
-                {showPassword ? "Hide" : "Show"}
-              </button>
-            </div>
+            <input
+              type="password"
+              placeholder="Type Here"
+              value={password}
+              onChange={(e) => setPass(e.target.value)}
+            />
           </div>
 
-          {}
-          <div style={{ margin: "10px 0" }}>
-            <label>
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={() => setRememberMe(!rememberMe)}
-              /> Remember Me
-            </label>
-          </div>
-
-          <button
-            type="submit"
-            className="auth-btn"
-            disabled={loading || !email || !password}
-          >
-            {loading ? "Logging in..." : "Login"}
+          <button type="submit" className="auth-btn" disabled={loading}>
+            {loading ? 'Logging in...' : 'Login'}
           </button>
-
-          <p style={{ textAlign: "right", marginTop: "5px" }}>
-            <Link to="#">Forgot Password?</Link>
-          </p>
         </form>
 
         <p className="auth-footer">
-          Don't have an account? <Link to="/register">Create Account</Link>
+          Don't have an account. <Link to="/register">Create Account</Link>
         </p>
       </div>
     </div>

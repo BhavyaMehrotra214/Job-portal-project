@@ -11,7 +11,12 @@ import Register from './pages/Register'
 import EditProfile from './pages/EditProfile'
 import AdminLogin from './pages/AdminLogin'
 import Jobs from './pages/Jobs'
-import ProtectedRoute from './components/ProtectedRoute'
+import ProtectedRoute from './Components/ProtectedRoute'
+import RecruiterRoute from './Components/RecruiterRoute'
+import CreateJob from './pages/CreateJob'
+import JobDetails from './pages/jobDetails'
+import EditJob from './pages/EditJob'
+
 import './App.css'
 
 function App() {
@@ -38,7 +43,7 @@ function App() {
           }
         }}
       />
-    <Routes>
+      <Routes>
 
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -52,6 +57,18 @@ function App() {
           <ProtectedRoute>
             <EditProfile />
           </ProtectedRoute>
+        } />
+        <Route path="/jobs" element={<Jobs />} />
+        <Route path="/jobs/:id" element={<JobDetails />} />
+        <Route path="/jobs/create" element={
+          <RecruiterRoute>
+            <CreateJob />
+          </RecruiterRoute>
+        } />
+        <Route path="/jobs/:id/edit" element={
+          <RecruiterRoute>
+            <EditJob />
+          </RecruiterRoute>
         } />
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={

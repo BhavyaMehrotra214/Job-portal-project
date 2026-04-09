@@ -1,15 +1,17 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './EditProfile.css'
+import { authApi } from '../utils/api'
+import { clearAuthData, getStoredUser, setAuthData } from '../utils/auth'
 
 const EditProfile = () => {
   const navigate = useNavigate()
-  const user = JSON.parse(localStorage.getItem('user') || '{}')
+  const user = getStoredUser() || {}
 
   const [editForm, setEditForm] = useState({
     username:   user.username   || '',
     email:      user.email      || '',
-    role:       user.role       || 'User',
+    role:       user.role       || 'candidate',
     location:   user.location   || '',
     resumeLink: user.resumeLink || '',
     gender:     user.gender     || '',
@@ -19,10 +21,30 @@ const EditProfile = () => {
     setEditForm({ ...editForm, [e.target.name]: e.target.value })
   }
 
-  const handleUpdate = () => {
-    const updatedUser = { ...user, ...editForm }
-    localStorage.setItem('user', JSON.stringify(updatedUser))
-    navigate('/dashboard')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const handleUpdate = async () => {
+    setError('')
+
+    try {
+      setLoading(true)
+      const updatedUser = await authApi.updateProfile(editForm)
+
+      setAuthData({
+        user: {
+          ...user,
+          ...updatedUser,
+          username: updatedUser.username || updatedUser.name
+        }
+      })
+
+      navigate('/dashboard')
+    } catch (updateError) {
+      setError(updateError.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -31,13 +53,6 @@ const EditProfile = () => {
       <nav className="dash-nav">
         <button className="menu-btn" onClick={() => navigate('/dashboard')}>➡️</button>
         <img src="/logo.png" alt="Job Portal" className="dash-nav-logo"/>
-        <button className="logout-btn" onClick={() => {
-          localStorage.removeItem('user')
-          localStorage.removeItem('token')
-          navigate('/login')
-        }}>
-           LOGOUT
-        </button>
       </nav>
 
       <div className="dash-body">
@@ -46,7 +61,7 @@ const EditProfile = () => {
             <img src="/logo4.png" alt="avatar"
               style={{ width: '60px', height: '60px', borderRadius: '50%' }} />
             <div className="sidebar-username">{user.username || 'User'}</div>
-            <div className="sidebar-role">User</div>
+            <div className="sidebar-role">{user.role || 'candidate'}</div>
           </div>
           <div className="sidebar-menu">
             <div className="sidebar-item" onClick={() => navigate('/dashboard')}>
@@ -66,6 +81,7 @@ const EditProfile = () => {
             <div className="edit-underline"></div>
 
             <div className="edit-form">
+              {error && <div className="alert-error">{error}</div>}
               <div className="edit-grid">
 
                 <div className="edit-field">
@@ -90,16 +106,6 @@ const EditProfile = () => {
                   />
                 </div>
 
-                <div className="edit-field">
-                  <label>Role</label>
-                  <input
-                    type="text"
-                    name="role"
-                    value={editForm.role}
-                    onChange={handleChange}
-                    placeholder="Role"
-                  />
-                </div>
 
                 <div className="edit-field">
                   <label>Location</label>
@@ -141,7 +147,7 @@ const EditProfile = () => {
 
               <div className="edit-btn-row">
                 <button className="update-btn" onClick={handleUpdate}>
-                  Update
+                  {loading ? 'Updating...' : 'Update'}
                 </button>
               </div>
 

@@ -39,6 +39,19 @@ export const apiRequest = async (path, options = {}) => {
 }
 
 export const authApi = {
+  login: (payload) => apiRequest(API_ENDPOINTS.login, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
+  register: (payload) => apiRequest(API_ENDPOINTS.register, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
+  getMe: () => apiRequest(API_ENDPOINTS.me),
+  updateProfile: (payload) => apiRequest(API_ENDPOINTS.updateProfile, {
+    method: 'PUT',
+    body: JSON.stringify(payload)
+  }),
   getUsers: () => apiRequest(API_ENDPOINTS.users),
   updateUserRole: (id, role) => apiRequest(API_ENDPOINTS.updateUserRole(id), {
     method: 'PUT',
@@ -51,6 +64,7 @@ export const authApi = {
 
 export const jobsApi = {
   getJobs: () => apiRequest(API_ENDPOINTS.jobs),
+  getJobById: (id) => apiRequest(API_ENDPOINTS.jobDetails(id)),
   createJob: (payload) => apiRequest(API_ENDPOINTS.createJob, {
     method: 'POST',
     body: JSON.stringify(payload)
@@ -65,7 +79,11 @@ export const jobsApi = {
 }
 
 export const applicationsApi = {
+  getMine: () => apiRequest(API_ENDPOINTS.myApplications),
   getAll: () => apiRequest(API_ENDPOINTS.applications),
+  applyToJob: (jobId) => apiRequest(API_ENDPOINTS.applyToJob(jobId), {
+    method: 'POST'
+  }),
   updateStatus: (id, status) => apiRequest(API_ENDPOINTS.updateApplicationStatus(id), {
     method: 'PUT',
     body: JSON.stringify({ status })
