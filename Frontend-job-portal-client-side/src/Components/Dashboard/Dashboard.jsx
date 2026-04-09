@@ -1,31 +1,113 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import './Dashboard.css'
+import { applicationsApi, authApi } from '../../utils/api'
+import { clearAuthData, getStoredUser, setAuthData } from '../../utils/auth'
+import AppNavbar from '../../Components/AppNavbar'
 
 const Dashboard = () => {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('profile')
-  const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [user, setUser] = useState({})
+  const [sidebarOpen] = useState(true)
+  const [user, setUser] = useState(() => getStoredUser() || {})
+  const [applications, setApplications] = useState([])
+  const [applicationError, setApplicationError] = useState('')
+  const [updatingId, setUpdatingId] = useState('')
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem('user') || '{}')
-    setUser(stored)
-  }, [])
+    const syncProfile = async () => {
+      try {
+        const data = await authApi.getMe()
+        setAuthData({
+          token: localStorage.getItem('token') || undefined,
+          user: {
+            _id: data._id,
+            username: data.username || data.name,
+            name: data.name,
+            email: data.email,
+            role: data.role,
+            location: data.location,
+            resumeLink: data.resumeLink,
+            gender: data.gender,
+            createdAt: data.createdAt
+          }
+        })
+        setUser({
+          _id: data._id,
+          username: data.username || data.name,
+          name: data.name,
+          email: data.email,
+          role: data.role,
+          location: data.location,
+          resumeLink: data.resumeLink,
+          gender: data.gender,
+          createdAt: data.createdAt
+        })
+      } catch {
+        clearAuthData()
+        navigate('/login')
+      }
+    }
 
-  const handleLogout = () => {
-    localStorage.removeItem('user')
-    localStorage.removeItem('token')
-    navigate('/login')
+    syncProfile()
+  }, [navigate])
+
+  useEffect(() => {
+    const loadApplications = async () => {
+      if (!user._id || user.role === 'admin') {
+        setApplications([])
+        setApplicationError('')
+        return
+      }
+
+      try {
+        setApplicationError('')
+
+        if (user.role === 'recruiter') {
+          const recruiterApplications = await applicationsApi.getMine()
+          setApplications(recruiterApplications)
+          return
+        }
+
+        const data = await applicationsApi.getMine()
+        setApplications(data)
+      } catch {
+        setApplications([])
+        setApplicationError(
+          user.role === 'recruiter'
+            ? 'Unable to load applicants right now.'
+            : 'Unable to load applications right now.'
+        )
+      }
+    }
+
+    loadApplications()
+  }, [user._id, user.role])
+
+  const updateApplicationStatus = async (applicationId, status) => {
+    try {
+      setUpdatingId(applicationId)
+      setApplicationError('')
+      await applicationsApi.updateStatus(applicationId, status)
+      setApplications((currentApplications) =>
+        currentApplications.map((application) =>
+          application._id === applicationId ? { ...application, status } : application
+        )
+      )
+      toast.success(`Candidate ${status === 'Approved' ? 'accepted' : 'rejected'} successfully.`)
+    } catch (error) {
+      const message = error.message || 'Failed to update candidate status.'
+      setApplicationError(message)
+      toast.error(message)
+    } finally {
+      setUpdatingId('')
+    }
   }
 
   return (
     <div className="dash-wrapper">
-
-      <nav className="dash-nav">
-        <img src="/logo.png" alt="Job Portal" className="dash-nav-logo" />
-        <button className="logout-btn" onClick={handleLogout}> LOGOUT</button>
-      </nav>
+      <AppNavbar />
 
       <div className="dash-body">
 
@@ -35,7 +117,7 @@ const Dashboard = () => {
               <img src="/logo4.png" alt="avatar"
                 style={{ width: '60px', height: '60px', borderRadius: '50%' }} />
               <div className="sidebar-username">{user.username || 'User'}</div>
-              <div className="sidebar-role">User</div>
+              <div className="sidebar-role">{user.role || 'candidate'}</div>
             </div>
             <div className="sidebar-menu">
               <div
@@ -48,8 +130,22 @@ const Dashboard = () => {
                 className={`sidebar-item ${activeTab === 'applications' ? 'active' : ''}`}
                 onClick={() => setActiveTab('applications')}
               >
-                <span className="sidebar-icon">💼</span> Applications
+                <span className="sidebar-icon">💼</span> {user.role === 'recruiter' ? 'Applicants' : 'Applications'}
               </div>
+              <div
+                className="sidebar-item"
+                onClick={() => navigate('/jobs')}
+              >
+                <span className="sidebar-icon">📄</span> Jobs
+              </div>
+              {user.role === 'recruiter' && (
+                <div
+                  className="sidebar-item"
+                  onClick={() => navigate('/jobs/create')}
+                >
+                  <span className="sidebar-icon">➕</span> Create Job
+                </div>
+              )}
             </div>
           </aside>
         )}
@@ -78,7 +174,7 @@ const Dashboard = () => {
                   </div>
                   <div className="info-row">
                     <span className="info-label">Role :</span>
-                    <span className="info-value">{user.role || 'User'}</span>
+                    <span className="info-value">{user.role || 'candidate'}</span>
                   </div>
                   <div className="info-row">
                     <span className="info-label">Email :</span>
@@ -87,9 +183,11 @@ const Dashboard = () => {
                   <div className="info-row">
                     <span className="info-label">Join :</span>
                     <span className="info-value">
-                      {new Date().toLocaleDateString('en-IN', {
-                        month: 'short', day: 'numeric', year: 'numeric'
-                      })}
+                      {user.createdAt
+                        ? new Date(user.createdAt).toLocaleDateString('en-IN', {
+                            month: 'short', day: 'numeric', year: 'numeric'
+                          })
+                        : 'N/A'}
                     </span>
                   </div>
                   <div className="info-row">
@@ -107,11 +205,75 @@ const Dashboard = () => {
           )}
           {activeTab === 'applications' && (
             <div className="profile-card">
-              <h2 className="profile-title">My Applications</h2>
-              <div className="empty-state">
-                <div className="empty-icon">📋</div>
-                <p>No applications yet.</p>
-              </div>
+              <h2 className="profile-title">
+                {user.role === 'recruiter' ? 'Job Applicants' : 'My Applications'}
+              </h2>
+              {applicationError && <p className="dashboard-message error">{applicationError}</p>}
+              {(() => {
+                if (user.role === 'recruiter') {
+                  if (applications.length === 0) {
+                    return (
+                      <div className="empty-state">
+                        <div className="empty-icon">📋</div>
+                        <p>No one has applied to your jobs yet.</p>
+                      </div>
+                    )
+                  }
+
+                  return (
+                    <div className="applications-list">
+                      {applications.map((application) => (
+                        <div key={application._id} className="application-card">
+                          <div className="application-copy">
+                            <p className="application-title">{application.candidate?.name || 'Candidate'}</p>
+                            <p className="application-meta">{application.candidate?.email || 'No email available'}</p>
+                            <p className="application-meta">Applied for: {application.job?.title || 'Job'}</p>
+                            <p className="application-status">Status: {application.status || 'Pending'}</p>
+                          </div>
+                          <div className="application-actions">
+                            <button
+                              className="status-btn approve"
+                              type="button"
+                              disabled={updatingId === application._id || application.status === 'Approved'}
+                              onClick={() => updateApplicationStatus(application._id, 'Approved')}
+                            >
+                              {updatingId === application._id && application.status !== 'Approved' ? 'Updating...' : 'Accept'}
+                            </button>
+                            <button
+                              className="status-btn reject"
+                              type="button"
+                              disabled={updatingId === application._id || application.status === 'Rejected'}
+                              onClick={() => updateApplicationStatus(application._id, 'Rejected')}
+                            >
+                              {updatingId === application._id && application.status !== 'Rejected' ? 'Updating...' : 'Reject'}
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )
+                }
+
+                if (applications.length === 0) {
+                  return (
+                    <div className="empty-state">
+                      <div className="empty-icon">📋</div>
+                      <p>No applications yet.</p>
+                    </div>
+                  )
+                }
+
+                return (
+                  <div className="profile-info">
+                    {applications.map((application) => (
+                      <div key={application._id} className="info-row">
+                        <span className="info-label">{application.job?.title || 'Job'} :</span>
+                        <span className="info-value">{application.status}</span>
+                      </div>
+                    ))}
+                  </div>
+                )
+              })()}
             </div>
           )}
 

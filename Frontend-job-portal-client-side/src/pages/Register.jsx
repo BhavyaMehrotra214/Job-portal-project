@@ -1,12 +1,22 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
+import { authApi } from '../utils/api'
+import { setAuthData } from '../utils/auth'
 
 const Register = () => {
   const navigate = useNavigate()
 
-  const [form, setForm]       = useState({ username: '', email: '', password: '', confirmPassword: '' })
+  const [form, setForm]       = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    role: 'candidate'
+  })
   const [error, setError]     = useState('')
   const [success, setSuccess] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
@@ -22,20 +32,52 @@ const Register = () => {
     return null
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setError('')
+    setSuccess('')
 
     const err = validate()
-    if (err) { setError(err); return }
+    if (err) {
+      setError(err)
+      toast.error(err)
+      return
+    }
 
-    localStorage.setItem('user', JSON.stringify({
-      username: form.username,
-      email:    form.email,
-      role:     'User'
-    }))
+    try {
+      setLoading(true)
 
-    setSuccess('Account created! Redirecting to login...')
-    setTimeout(() => navigate('/login'), 1500)
+      const data = await authApi.register({
+        username: form.username,
+        email: form.email,
+        password: form.password,
+        role: form.role
+      })
+
+      setAuthData({
+        token: data.token,
+        user: {
+          _id: data._id,
+          username: data.username || data.name,
+          name: data.name,
+          email: data.email,
+          role: data.role,
+          location: data.location,
+          resumeLink: data.resumeLink,
+          gender: data.gender,
+          createdAt: data.createdAt
+        }
+      })
+
+      setSuccess('Account created! Redirecting...')
+      toast.success('Account created successfully!')
+      setTimeout(() => navigate('/dashboard'), 1200)
+    } catch (submitError) {
+      setError(submitError.message)
+      toast.error(submitError.message || 'Registration failed.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -61,6 +103,14 @@ const Register = () => {
           </div>
 
           <div className="form-field">
+            <label>Role</label>
+            <select name="role" value={form.role} onChange={handleChange}>
+              <option value="candidate">Candidate</option>
+              <option value="recruiter">Recruiter</option>
+            </select>
+          </div>
+
+          <div className="form-field">
             <label>Password</label>
             <input type="password" name="password" placeholder="Type Here"
               value={form.password} onChange={handleChange} />
@@ -72,8 +122,8 @@ const Register = () => {
               value={form.confirmPassword} onChange={handleChange} />
           </div>
 
-          <button type="submit" className="auth-btn">
-            Register
+          <button type="submit" className="auth-btn" disabled={loading}>
+            {loading ? 'Registering...' : 'Register'}
           </button>
         </form>
 
