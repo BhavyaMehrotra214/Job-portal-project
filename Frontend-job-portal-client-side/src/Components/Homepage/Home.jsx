@@ -14,30 +14,70 @@ const Home = () => {
       <section className="hero">
         <div className="hero-left">
           <h1 className="hero-title">
-            Get Your <span className="blue">Dream Job</span> Today!
+            Land Your <span className="blue">Perfect Job</span> In A Snap!
           </h1>
 
           <p className="hero-desc">
-            Our Job Portal is designed to make job searching simple, fast, and effective.
-            Whether you are a fresher or an experienced professional, you can discover
-            thousands of job opportunities tailored to your skills and interests.
-
-            Recruiters can register, create a company profile, post jobs, review applicants,
-            and accept or reject candidates directly from their dashboard. Candidates can
-            apply, track applications, and update their profiles effortlessly, while admins
-            keep platform control available as an optional higher-privilege role.
+            The easiest way to find, apply, and manage your dream career. 
+            Connect with top companies and grow your professional journey with our powerful portal.
           </p>
 
-          <button
-            className="hero-btn"
-            onClick={() => navigate('/register')}
-          >
-            Apply Now
-          </button>
+          <div className="hero-btns">
+            <button className="hero-btn" onClick={() => navigate('/jobs')}>
+              Explore Jobs
+            </button>
+            <button className="hero-btn-outline" onClick={() => navigate('/register')}>
+              Join Hunter
+            </button>
+          </div>
+
+          <div className="hero-stats">
+            <div className="stat">
+              <span className="stat-num">10k+</span>
+              <span className="stat-label">Jobs Posted</span>
+            </div>
+            <div className="stat">
+              <span className="stat-num">500+</span>
+              <span className="stat-label">Companies</span>
+            </div>
+            <div className="stat">
+              <span className="stat-num">20k+</span>
+              <span className="stat-label">Candidates</span>
+            </div>
+          </div>
         </div>
 
         <div className="hero-right">
-          <img src="/logo2.png" alt="hero" className="hero-img" />
+          <div className="hero-img-wrapper">
+             <img src="/logo2.png" alt="hero" className="hero-img" />
+             <div className="floating-badge badge-1">🚀 500+ New Jobs</div>
+             <div className="floating-badge badge-2">✨ Top Companies</div>
+          </div>
+        </div>
+      </section>
+
+      {/* Role Highlights Section */}
+      <section className="role-highlights">
+        <div className="role-card candidate-card">
+          <h2>For Candidates</h2>
+          <ul>
+            <li>Browse thousands of job openings across industries</li>
+            <li>Apply instantly with your professional profile</li>
+            <li>Track your application status in real-time</li>
+            <li>Get personalized job recommendations</li>
+          </ul>
+          <p className="role-note">Find your path today.</p>
+        </div>
+
+        <div className="role-card recruiter-card">
+          <h2>For Recruiters</h2>
+          <ul>
+            <li>Post jobs and reach thousands of qualified candidates</li>
+            <li>Manage applicants efficiently through a unique dashboard</li>
+            <li>Accept or reject candidates with one click</li>
+            <li>Showcase your company profile</li>
+          </ul>
+          <p className="role-note">Hire the best talent.</p>
         </div>
       </section>
     </div>
