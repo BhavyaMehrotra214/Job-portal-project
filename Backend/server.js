@@ -2,6 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import bcrypt from "bcryptjs";
+import path from "path";
+import { fileURLToPath } from "url";
 import connectDB from "./config/db.js";
 
 import authRoutes from "./routes/authRoutes.js";
@@ -51,6 +53,17 @@ app.use("/api/applications", applicationRoutes);
 app.get("/", (req, res) => {
   res.send("API Running");
 });
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../Frontend-job-portal-client-side/dist")));
+
+  app.get("*", (req, res) =>
+    res.sendFile(path.resolve(__dirname, "../", "Frontend-job-portal-client-side", "dist", "index.html"))
+  );
+}
 
 const PORT = process.env.PORT || 5000;
 
