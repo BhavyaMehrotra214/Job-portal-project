@@ -50,9 +50,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/applications", applicationRoutes);
 
-app.get("/", (req, res) => {
-  res.send("API Running");
-});
+// app.get("/", (req, res) => {
+//   res.send("API Running");
+// });
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
