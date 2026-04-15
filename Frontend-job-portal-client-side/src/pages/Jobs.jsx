@@ -1,15 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './Jobs.css'
-
-const DEMO_JOBS = [
-  { id: 1, title: 'Driver', company: 'Kingox',  location: 'Pune', type: 'Full-Time', status: 'Pending', date: 'Aug 6th, 2025'},
-  { id: 2, title: 'TestJob',company: 'TestCompany', location: 'India', type: 'Full-Time', status: 'Pending', date: 'Aug 1st, 2025'},
-  { id: 3, title: 'HeyHello', company: 'Infotech Limited', location: 'India', type: 'Full-Time', status: 'Pending', date: 'Aug 1st,2025'},
-  { id: 4, title: 'Developer',  company: 'Airtel',  location: 'Gandhinagar', type: 'Part-Time', status: 'Pending', date: 'Jul 17th, 2025'},
-  { id: 5, title: 'Bike Rider', company: 'AirLinks', location: 'London', type: 'Full-Time', status: 'Pending', date: 'Jun 26th, 2025'},
-  { id: 6, title: 'React Dev',  company: 'TechCorp', location: 'Remote', type: 'Full-Time', status: 'Open', date: 'Mar 19th, 2026'},
-]
+import { applicationsApi, jobsApi } from '../utils/api'
+import { getStoredUser } from '../utils/auth'
+import AppNavbar from '../Components/AppNavbar'
 
 const Jobs = () => {
   const navigate = useNavigate()
@@ -17,30 +11,53 @@ const Jobs = () => {
   const [typeFilter,   setTypeFilter]   = useState('Default')
   const [statusFilter, setStatusFilter] = useState('Default')
   const [sortBy,       setSortBy]       = useState('Default')
+  const [jobs,         setJobs]         = useState([])
+  const [loading,      setLoading]      = useState(true)
+  const [error,        setError]        = useState('')
+  const [user] = useState(() => getStoredUser())
+  const [appliedJobIds, setAppliedJobIds] = useState([])
 
-  const handleLogout = () => {
-    localStorage.removeItem('user')
-    localStorage.removeItem('token')
-    navigate('/')
-  }
+  useEffect(() => {
+    const loadJobs = async () => {
+      try {
+        setLoading(true)
+        const [jobsData, applicationsData] = await Promise.all([
+          jobsApi.getJobs(),
+          user?.role === 'candidate' ? applicationsApi.getMine() : Promise.resolve([])
+        ])
 
-  const filtered = DEMO_JOBS.filter(j =>
+        setJobs(jobsData)
+        setAppliedJobIds(applicationsData.map((application) => application.job?._id).filter(Boolean))
+      } catch (loadError) {
+        setError(loadError.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadJobs()
+  }, [user?.role])
+
+  const filtered = jobs.filter(j =>
     j.title.toLowerCase().includes(search.toLowerCase()) &&
-    (typeFilter   === 'Default' || j.type   === typeFilter) &&
-    (statusFilter === 'Default' || j.status === statusFilter)
-  )
+    (typeFilter   === 'Default' || (j.type || 'Full-Time') === typeFilter) &&
+    (statusFilter === 'Default' || (j.status || 'Open') === statusFilter)
+  ).sort((a, b) => {
+    if (sortBy === 'A-Z') return a.title.localeCompare(b.title)
+    if (sortBy === 'Z-A') return b.title.localeCompare(a.title)
+    return new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+  })
+
+  const canManageJobs = ['recruiter', 'admin'].includes(user?.role)
+
+  const isAppliedJob = (job) =>
+    user?.role === 'candidate' &&
+    user?._id &&
+    appliedJobIds.includes(job._id)
 
   return (
     <div className="jobs-page">
-
-      <nav className="jobs-nav">
-        <img src="/logo.png" alt="logo" className="nav-logo" />
-        <div className="nav-links">
-          <span className="nav-active">Jobs</span>
-          <span className="nav-link" onClick={() => navigate('/dashboard')}>Dashboard</span>
-          <button className="nav-btn" onClick={handleLogout}>Logout</button>
-        </div>
-      </nav>
+      <AppNavbar />
 
       
       <div className="filter-bar">
@@ -88,11 +105,13 @@ const Jobs = () => {
       </div>
 
       <div className="jobs-grid">
-        {filtered.length === 0 ? (
+        {loading && <p className="jobs-empty">Loading jobs...</p>}
+        {!loading && error && <p className="jobs-empty">{error}</p>}
+        {!loading && !error && filtered.length === 0 ? (
           <p className="jobs-empty">No jobs found.</p>
         ) : (
           filtered.map(job => (
-            <div key={job.id} className="job-card">
+            <div key={job._id} className="job-card">
 
               <div className="card-header">
                 <div className="card-icon">{job.title[0].toUpperCase()}</div>
@@ -103,15 +122,30 @@ const Jobs = () => {
               </div>
 
               <div className="card-details">
-                <p>📅 {job.date}</p>
+                <p>📅 {new Date(job.createdAt).toLocaleDateString('en-IN', {
+                  month: 'short', day: 'numeric', year: 'numeric'
+                })}</p>
                 <p>📍 {job.location}</p>
-                <p>💼 {job.type}</p>
-                <p><span className="card-status">{job.status.toUpperCase()}</span></p>
+                <p>💼 {job.type || 'Full-Time'}</p>
+                <p>👥 {job.applicationsCount || 0} applied</p>
+                <p><span className="card-status">{(job.status || 'Open').toUpperCase()}</span></p>
               </div>
 
               <div className="card-btns">
-                <button className="btn-details">Details</button>
-                <button className="btn-apply">Apply</button>
+                <button className="btn-details" onClick={() => navigate(`/jobs/${job._id}`)}>Details</button>
+                {canManageJobs ? (
+                  <button className="btn-apply" onClick={() => navigate(`/jobs/${job._id}/edit`)}>
+                    Edit
+                  </button>
+                ) : isAppliedJob(job) ? (
+                  <button className="btn-apply" disabled>
+                    Applied
+                  </button>
+                ) : (
+                  <button className="btn-apply" onClick={() => navigate(`/jobs/${job._id}`)}>
+                    Apply
+                  </button>
+                )}
               </div>
 
             </div>

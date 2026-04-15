@@ -1,30 +1,81 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
 
 import Home from './Components/Homepage/Home'
 import Dashboard from './Components/Dashboard/Dashboard'
 import AdminDashboard from './Components/Admin/AdminDashboard'
+import AdminRoute from './Components/AdminRoute'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import EditProfile from './pages/EditProfile'
 import AdminLogin from './pages/AdminLogin'
 import Jobs from './pages/Jobs'
+import ProtectedRoute from './Components/ProtectedRoute'
+import RecruiterRoute from './Components/RecruiterRoute'
+import CreateJob from './pages/CreateJob'
+import JobDetails from './pages/jobDetails'
+import EditJob from './pages/EditJob'
 
 import './App.css'
 
 function App() {
   return (
     <BrowserRouter>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#0f172a',
+            color: '#f8fafc',
+            border: '1px solid #1e293b'
+          },
+          success: {
+            style: {
+              border: '1px solid #16a34a'
+            }
+          },
+          error: {
+            style: {
+              border: '1px solid #dc2626'
+            }
+          }
+        }}
+      />
       <Routes>
 
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/edit-profile" element={<EditProfile />} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/edit-profile" element={
+          <ProtectedRoute>
+            <EditProfile />
+          </ProtectedRoute>
+        } />
         <Route path="/jobs" element={<Jobs />} />
+        <Route path="/jobs/:id" element={<JobDetails />} />
+        <Route path="/jobs/create" element={
+          <RecruiterRoute>
+            <CreateJob />
+          </RecruiterRoute>
+        } />
+        <Route path="/jobs/:id/edit" element={
+          <RecruiterRoute>
+            <EditJob />
+          </RecruiterRoute>
+        } />
         <Route path="/admin" element={<AdminLogin />} />
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/dashboard" element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        } />
 
       </Routes>
     </BrowserRouter>

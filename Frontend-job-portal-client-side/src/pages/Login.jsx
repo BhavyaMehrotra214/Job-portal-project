@@ -1,5 +1,8 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
+import { authApi } from '../utils/api'
+import { setAuthData } from '../utils/auth'
 
 const Login = () => {
   const navigate = useNavigate()
@@ -8,30 +11,57 @@ const Login = () => {
   const [password, setPass]   = useState('')
   const [error, setError]     = useState('')
   const [success, setSuccess] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async(e) => {
     e.preventDefault()
     setError('')
     setSuccess('')
 
     if (!email.trim() || !password.trim()) {
-      setError('Please fill in all fields.')
+      const message = 'Please fill in all fields'
+      setError(message)
+      toast.error(message)
       return
     }
+
     if (!/\S+@\S+\.\S+/.test(email)) {
-      setError('Please enter a valid email address.')
+       const message = 'Please fill in all fields'
+      setError(message)
+      toast.error(message)
       return
     }
 
-    const savedUser = JSON.parse(localStorage.getItem('user') || '{}')
+    try {
+      setLoading(true)
 
-    localStorage.setItem('user', JSON.stringify({
-      username: savedUser.username,
-      email:email
-    }))
+      const data = await authApi.login({ email, password })
 
-    setSuccess('Login successful! Redirecting...')
-    setTimeout(() => navigate('/'), 1200)
+      setAuthData({
+        token: data.token,
+        user: {
+          _id: data._id,
+          username: data.username || data.name,
+          name: data.name,
+          email: data.email,
+          role: data.role,
+          location: data.location,
+          resumeLink: data.resumeLink,
+          gender: data.gender,
+          createdAt: data.createdAt
+        }
+      })
+
+      setSuccess('Login successful! Redirecting...')
+      toast.success('Login successful!')
+      setTimeout(() => navigate('/Jobs'), 1200)
+    } catch (err) {
+      setError(err.message)
+      toast.error(err.message || 'Login failed.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -64,8 +94,8 @@ const Login = () => {
             />
           </div>
 
-          <button type="submit" className="auth-btn">
-            Login
+          <button type="submit" className="auth-btn" disabled={loading}>
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 
